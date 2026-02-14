@@ -1,33 +1,21 @@
-from ibm_watsonx_ai.foundation_models import ModelInference
-from ibm_watsonx_ai import Credentials, APIClient
 from typing import Dict, List
 from langchain.schema import Document
 from config.settings import settings
+from utils.llm_factory import LLMFactory
 import json
-
-credentials = Credentials(
-                   url = "https://us-south.ml.cloud.ibm.com",
-                  )
-client = APIClient(credentials)
-
 
 class ResearchAgent:
     def __init__(self):
         """
-        Initialize the research agent with the IBM WatsonX ModelInference.
+        Initialize the research agent with the LLM provider from settings.
         """
-        # Initialize the WatsonX ModelInference
-        print("Initializing ResearchAgent with IBM WatsonX ModelInference...")
-        self.model = ModelInference(
+        print(f"Initializing ResearchAgent with provider: {settings.LLM_PROVIDER}...")
+        self.model = LLMFactory.get_llm(
             model_id="meta-llama/llama-3-2-90b-vision-instruct", 
-            credentials=credentials,
-            project_id="skills-network",
-            params={
-                "max_tokens": 300,            # Adjust based on desired response length
-                "temperature": 0.3,           # Controls randomness; lower values make output more deterministic
-            }
+            max_tokens=300,            # Adjust based on desired response length
+            temperature=0.3            # Controls randomness
         )
-        print("ModelInference initialized successfully.")
+        print("Model initialized successfully.")
 
     def sanitize_response(self, response_text: str) -> str:
         """

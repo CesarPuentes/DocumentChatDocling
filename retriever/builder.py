@@ -11,19 +11,45 @@ logger = logging.getLogger(__name__)
 
 class RetrieverBuilder:
     def __init__(self):
-        """Initialize the retriever builder with embeddings."""
-        embed_params = {
-            EmbedTextParamsMetaNames.TRUNCATE_INPUT_TOKENS: 3,
-            EmbedTextParamsMetaNames.RETURN_OPTIONS: {"input_text": True},
-        }
+        """Initialize the retriever builder with embeddings based on the selected provider."""
+        provider = settings.LLM_PROVIDER.lower()
+        logger.info(f"Initializing embeddings for provider: {provider}")
 
-        watsonx_embedding = WatsonxEmbeddings(
-            model_id="ibm/slate-125m-english-rtrvr-v2",
-            url="https://us-south.ml.cloud.ibm.com",
-            project_id="skills-network",
-            params=embed_params
-        )
-        self.embeddings = watsonx_embedding
+        if provider == "watsonx":
+            from ibm_watsonx_ai.metanames import EmbedTextParamsMetaNames
+            from langchain_ibm import WatsonxEmbeddings
+            
+            embed_params = {
+                EmbedTextParamsMetaNames.TRUNCATE_INPUT_TOKENS: 3,
+                EmbedTextParamsMetaNames.RETURN_OPTIONS: {"input_text": True},
+            }
+            self.embeddings = WatsonxEmbeddings(
+                model_id="ibm/slate-125m-english-rtrvr-v2",
+                url="https://us-south.ml.cloud.ibm.com",
+                project_id=settings.WATSONX_PROJECT_ID,
+                apikey=settings.WATSONX_APIKEY,
+                params=embed_params
+            )
+        elif provider == "deepseek":
+            from langchain_openai import OpenAIEmbeddings
+            self.embeddings = OpenAIEmbeddings(
+                model="deepseek-embed", # or another DeepSeek embedding model if available
+                api_key=settings.DEEPSEEK_API_KEY,
+                base_url="https://api.deepseek.com/v1"
+            )
+        elif provider in ["openai", "ollama"]:
+            from langchain_openai import OpenAIEmbeddings
+            model = "text-embedding-3-small" if provider == "openai" else settings.OLLAMA_MODEL_NAME
+            api_key = settings.OPENAI_API_KEY if provider == "openai" else "ollama"
+            base_url = None if provider == "openai" else settings.OLLAMA_BASE_URL
+            
+            self.embeddings = OpenAIEmbeddings(
+                model=model,
+                api_key=api_key,
+                base_url=base_url
+            )
+        else:
+            raise ValueError(f"Unsupported provider for embeddings: {provider}")
         
     def build_hybrid_retriever(self, docs):
         """Build a hybrid retriever using BM25 and vector-based retrieval."""

@@ -83,10 +83,32 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### **4️⃣ Set Up API Keys**  
-DocChat requires an OpenAI API key for processing. Add it to a `.env` file:
+### **4️⃣ Set Up configuration**  
+DocChat supports multiple LLM providers. Create a `.env` file in the root directory (you can use `.env.example` as a template):
+
 ```bash
-OPENAI_API_KEY=your-api-key-here
+cp .env.example .env
+```
+
+Edit the `.env` file and set your preferred provider:
+
+| Provider | `LLM_PROVIDER` | Required API Key / Config |
+|----------|---------------|--------------------------|
+| **IBM WatsonX** (Default) | `watsonx` | `WATSONX_APIKEY` |
+| **DeepSeek** | `deepseek` | `DEEPSEEK_API_KEY` |
+| **OpenAI** | `openai` | `OPENAI_API_KEY` |
+| **Ollama** (Local) | `ollama` | `OLLAMA_MODEL_NAME` (e.g., `llama3`) |
+
+**Example for DeepSeek:**
+```env
+LLM_PROVIDER=deepseek
+DEEPSEEK_API_KEY=your-deepseek-api-key
+```
+
+**Example for Local Ollama:**
+```env
+LLM_PROVIDER=ollama
+OLLAMA_MODEL_NAME=llama3
 ```
 
 

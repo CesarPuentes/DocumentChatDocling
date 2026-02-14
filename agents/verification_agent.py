@@ -1,31 +1,20 @@
-import json  # Import for JSON serialization
-from ibm_watsonx_ai.foundation_models import ModelInference
-from ibm_watsonx_ai import Credentials, APIClient
 from typing import Dict, List
 from langchain.schema import Document
-
-credentials = Credentials(
-                   url = "https://us-south.ml.cloud.ibm.com",
-                  )
-client = APIClient(credentials)
+from config.settings import settings
+from utils.llm_factory import LLMFactory
 
 class VerificationAgent:
     def __init__(self):
         """
-        Initialize the verification agent with the IBM WatsonX ModelInference.
+        Initialize the verification agent with the LLM provider from settings.
         """
-        # Initialize the WatsonX ModelInference
-        print("Initializing VerificationAgent with IBM WatsonX ModelInference...")
-        self.model = ModelInference(
+        print(f"Initializing VerificationAgent with provider: {settings.LLM_PROVIDER}...")
+        self.model = LLMFactory.get_llm(
             model_id="ibm/granite-4-h-small", 
-            credentials=credentials,
-            project_id="skills-network",
-            params={
-                "max_tokens": 200,            # Adjust based on desired response length
-                "temperature": 0.0,           # Remove randomness for consistency
-            }
+            max_tokens=200,            # Adjust based on desired response length
+            temperature=0.0,           # Remove randomness for consistency
         )
-        print("ModelInference initialized successfully.")
+        print("Model initialized successfully.")
 
     def sanitize_response(self, response_text: str) -> str:
         """

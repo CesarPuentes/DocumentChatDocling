@@ -3,8 +3,18 @@ from .constants import MAX_FILE_SIZE, MAX_TOTAL_SIZE, ALLOWED_TYPES
 import os
 
 class Settings(BaseSettings):
-    # Required settings
-    OPENAI_API_KEY: str
+    # API Keys (Optional)
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+    DEEPSEEK_API_KEY: str = os.getenv("DEEPSEEK_API_KEY", "")
+    WATSONX_APIKEY: str = os.getenv("WATSONX_APIKEY", "")
+    WATSONX_PROJECT_ID: str = os.getenv("WATSONX_PROJECT_ID", "skills-network")
+
+    # LLM Settings
+    LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "watsonx")
+    DEEPSEEK_MODEL_NAME: str = os.getenv("DEEPSEEK_MODEL_NAME", "deepseek-chat")
+    OPENAI_MODEL_NAME: str = os.getenv("OPENAI_MODEL_NAME", "gpt-4o-mini")
+    OLLAMA_MODEL_NAME: str = os.getenv("OLLAMA_MODEL_NAME", "llama3")
+    OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
 
     # Optional settings with defaults
     MAX_FILE_SIZE: int = MAX_FILE_SIZE

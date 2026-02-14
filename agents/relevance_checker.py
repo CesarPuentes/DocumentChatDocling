@@ -1,24 +1,17 @@
-from ibm_watsonx_ai.foundation_models import ModelInference
-from ibm_watsonx_ai import Credentials, APIClient
 from config.settings import settings
+from utils.llm_factory import LLMFactory
 import re
 import logging
 
 logger = logging.getLogger(__name__)
 
-credentials = Credentials(
-                   url = "https://us-south.ml.cloud.ibm.com",
-                  )
-client = APIClient(credentials)
-
 class RelevanceChecker:
     def __init__(self):
-        # Initialize the WatsonX ModelInference
-        self.model = ModelInference(
+        # Initialize the LLM with the provider from settings
+        self.model = LLMFactory.get_llm(
             model_id="ibm/granite-3-3-8b-instruct",
-            credentials=credentials,
-            project_id="skills-network",
-            params={"temperature": 0, "max_tokens": 10},
+            temperature=0, 
+            max_tokens=10,
         )
 
     def check(self, question: str, retriever, k=3) -> str:
