@@ -87,34 +87,51 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### **4️⃣ Set Up configuration**  
-DocChat supports multiple LLM providers. Create a `.env` file in the root directory (you can use `.env.example` as a template):
+### **4️⃣ Configuration & LLM Providers**  
+DocChat uses a unified abstraction layer. Create a `.env` file (use `.env.example` as a template):
 
 ```bash
 cp .env.example .env
 ```
 
-Edit the `.env` file and set your preferred provider:
+#### **Global Settings**
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `LLM_PROVIDER` | Active provider (`watsonx`, `deepseek`, `openai`, `ollama`) | `watsonx` |
+| `LOG_LEVEL` | Logging detail (`INFO`, `DEBUG`, `ERROR`) | `INFO` |
 
-| Provider | `LLM_PROVIDER` | Required API Key / Config |
-|----------|---------------|--------------------------|
-| **IBM WatsonX** (Default) | `watsonx` | `WATSONX_APIKEY` |
-| **DeepSeek** | `deepseek` | `DEEPSEEK_API_KEY` |
-| **OpenAI** | `openai` | `OPENAI_API_KEY` |
-| **Ollama** (Local) | `ollama` | `OLLAMA_MODEL_NAME` (e.g., `llama3`) |
+#### **Provider-Specific Setup**
 
-**Example for DeepSeek:**
-```env
-LLM_PROVIDER=deepseek
-DEEPSEEK_API_KEY=your-deepseek-api-key
-```
+**1. IBM WatsonX (Enterprise)**
+- `WATSONX_APIKEY`: Your IBM Cloud IAM API key.
+- `WATSONX_PROJECT_ID`: Your WatsonX Project GUID (found in Project -> Manage -> General).
+- *Embeddings:* Automatically uses `ibm/slate-125m-english-rtrvr-v2`.
 
-**Example for Local Ollama:**
-```env
-LLM_PROVIDER=ollama
-OLLAMA_MODEL_NAME=llama3
-```
+**2. DeepSeek (Performance/Cost)**
+- `DEEPSEEK_API_KEY`: Your DeepSeek API key.
+- `DEEPSEEK_MODEL_NAME`: Set to `deepseek-chat` or `deepseek-reasoner`.
+- *Embeddings:* Automatically uses DeepSeek's embedding API.
 
+**3. OpenAI (Standard)**
+- `OPENAI_API_KEY`: Your OpenAI API key.
+- `OPENAI_MODEL_NAME`: e.g., `gpt-4o-mini`.
+
+**4. Ollama (Local/Privacy)**
+- `OLLAMA_MODEL_NAME`: The model tag (e.g., `llama3`, `mistral`).
+- `OLLAMA_BASE_URL`: Usually `http://localhost:11434/v1`.
+- *Note:* Ensure Ollama is running locally and the model is pulled (`ollama pull llama3`).
+
+---
+
+#### **Advanced Configuration (Optional)**
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VECTOR_SEARCH_K` | Number of documents to retrieve via vector search | `10` |
+| `CHROMA_DB_PATH` | Local directory for vector database | `./chroma_db` |
+| `MAX_FILE_SIZE` | Maximum upload size in MB | `5` |
+| `ALLOWED_EXTENSIONS` | Supported file types | `.pdf`, `.docx`, `.txt` |
+
+---
 
 ### **5️⃣ Run the Application** 
 ```bash
