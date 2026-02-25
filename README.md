@@ -1,6 +1,7 @@
 
 ### This in a exercise from the IBM course: Chat with your documents via Agentic RAG, LangGraph, Docling
 
+Link: https://cognitiveclass.ai/courses/chat-with-your-documents-via-agentic-rag-langgraph-docling
 
 # **DocChat** 📝🤖  
 🚀 **AI-powered Multi-Agent RAG system for intelligent document querying with fact verification**  
